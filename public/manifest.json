@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "AI Data Leak Detector",
+  "version": "1.0.0",
+  "description": "Real-time AI-powered monitoring to detect data leaks and safeguard your personal information",
+  "icons": {
+    "16": "shield-lock.svg",
+    "48": "shield-lock.svg",
+    "128": "shield-lock.svg"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "shield-lock.svg",
+      "48": "shield-lock.svg",
+      "128": "shield-lock.svg"
+    },
+    "default_title": "AI Data Leak Detector"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

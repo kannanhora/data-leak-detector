@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:extension": "vite build && npm run copy-extension-files",
+    "copy-extension-files": "powershell -Command \"Copy-Item -Path ./public/background.js,./public/content.js,./public/manifest.json -Destination ./dist/\"",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"

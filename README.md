@@ -1,73 +1,40 @@
-# Welcome to your Lovable project
+# AI Data Leak Detector - Chrome Extension
 
-## Project info
+A Chrome extension that uses AI to detect potential data leaks and protect your digital identity while browsing the web.
 
-**URL**: https://lovable.dev/projects/a3a6c2d8-be9a-4e7c-b48e-d1d840b9d2c4
+## Features
 
-## How can I edit this code?
+- Real-time scanning of websites for potential data leaks
+- Risk assessment and security metrics
+- Detailed analysis of website security practices
+- Notifications for high-risk websites
+- Background monitoring for continuous protection
 
-There are several ways of editing your application.
+## Installation Instructions
 
-**Use Lovable**
+1. Clone this repository
+2. Run `npm install` to install dependencies
+3. Run `npm run build:extension` to build the extension
+4. Open Chrome and navigate to `chrome://extensions/`
+5. Enable "Developer mode" in the top right corner
+6. Click "Load unpacked" and select the `dist` folder from this project
+7. The extension icon should now appear in your Chrome toolbar
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a3a6c2d8-be9a-4e7c-b48e-d1d840b9d2c4) and start prompting.
+## Development
 
-Changes made via Lovable will be committed automatically to this repo.
+- `npm run dev` - Start development server
+- `npm run build:extension` - Build the extension for production
+- `npm run lint` - Run linting
 
-**Use your preferred IDE**
+## Technologies Used
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
 - React
-- shadcn-ui
+- TypeScript
+- Vite
+- Chrome Extension API
 - Tailwind CSS
+- Shadcn UI Components
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/a3a6c2d8-be9a-4e7c-b48e-d1d840b9d2c4) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT

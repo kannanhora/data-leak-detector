@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SecurityBadge } from "@/components/SecurityBadge";
@@ -8,18 +8,79 @@ import { ScanningAnimation } from "@/components/ScanningAnimation";
 import { DetailedAnalysisModal } from "@/components/DetailedAnalysisModal";
 import { Shield, Activity, Database, Network, Eye, Lock, Zap, Globe, Copy, CheckCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ThreatCard } from "@/components/ThreatCard";
 
-const Index = () => {
+interface IndexProps {
+  currentUrl: string;
+  currentSite: string;
+}
+
+interface ScanResult {
+  riskScore: number;
+  riskLevel: "safe" | "low" | "medium" | "high";
+  dataLeakDetected: boolean;
+  sensitiveDataFound: boolean;
+  encryptionStrength: string;
+  dataHandlingPractices: string;
+  connectionSpeed: string;
+  threats: {
+    title: string;
+    description: string;
+    severity: "low" | "medium" | "high";
+    category: string;
+    detected: string;
+  }[];
+  timestamp: string;
+}
+
+const Index = ({ currentUrl, currentSite }: IndexProps) => {
   const [isScanning, setIsScanning] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
-  const [currentSite] = useState("example-shopping.com");
-  const [currentUrl] = useState("https://example-shopping.com/products/electronics");
   const [copied, setCopied] = useState(false);
+  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const { toast } = useToast();
 
   const handleScan = () => {
     setIsScanning(true);
-    setTimeout(() => setIsScanning(false), 3000);
+    
+    // Use Chrome extension API to communicate with background script
+    if (chrome?.runtime) {
+      chrome.runtime.sendMessage({ action: 'scanPage', url: currentUrl }, (response) => {
+        if (response) {
+          setScanResult(response);
+          toast({
+            title: "Scan Complete",
+            description: `Risk Score: ${response.riskScore}`,
+          });
+        }
+        setIsScanning(false);
+      });
+    } else {
+      // Fallback for development environment
+      setTimeout(() => {
+        const mockResult: ScanResult = {
+          riskScore: 45,
+          riskLevel: "medium",
+          dataLeakDetected: false,
+          sensitiveDataFound: true,
+          encryptionStrength: "moderate",
+          dataHandlingPractices: "moderate",
+          connectionSpeed: "650ms",
+          threats: [
+            {
+              title: "Cookie Tracking",
+              description: "This site uses extensive cookie tracking that may collect personal data",
+              severity: "medium",
+              category: "Privacy",
+              detected: new Date().toLocaleString()
+            }
+          ],
+          timestamp: new Date().toISOString()
+        };
+        setScanResult(mockResult);
+        setIsScanning(false);
+      }, 3000);
+    }
   };
 
   const handleCopyUrl = () => {
@@ -29,6 +90,12 @@ const Index = () => {
       title: "URL Copied",
       description: "Site URL copied to clipboard",
     });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyUrl = () => {
+    navigator.clipboard.writeText(currentUrl);
+    setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -119,15 +186,39 @@ const Index = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="p-6 border-2 border-border">
-              <SecurityBadge riskLevel="medium" siteName={currentSite} isScanning={isScanning} />
+              <SecurityBadge 
+                riskLevel={scanResult?.riskLevel || "medium"} 
+                siteName={currentSite} 
+                isScanning={isScanning} 
+              />
               <div className="mt-6">
-                <RiskMeter score={67} />
+                <RiskMeter score={scanResult?.riskScore || 50} />
               </div>
             </Card>
 
             <Card className="p-6 border-2 border-border flex items-center justify-center">
               {isScanning ? (
                 <ScanningAnimation isActive={isScanning} />
+              ) : scanResult ? (
+                <div className="w-full space-y-4">
+                  <h3 className="text-lg font-semibold">Detected Issues</h3>
+                  {scanResult.threats.length > 0 ? (
+                    <div className="space-y-3">
+                      {scanResult.threats.map((threat, index) => (
+                        <ThreatCard
+                          key={index}
+                          title={threat.title}
+                          description={threat.description}
+                          severity={threat.severity}
+                          category={threat.category}
+                          detected={threat.detected}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center text-muted-foreground">No threats detected</p>
+                  )}
+                </div>
               ) : (
                 <div className="text-center space-y-4">
                   <Shield className="h-16 w-16 text-primary mx-auto opacity-50" />
@@ -144,44 +235,96 @@ const Index = () => {
         <section className="space-y-4">
           <h3 className="text-2xl font-bold">Real-time Metrics</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <MetricCard
-              icon={Activity}
-              label="Active Monitoring"
-              value="24/7"
-              variant="success"
-              trend="up"
-              trendValue="Always protected"
-            />
-            <MetricCard
-              icon={Database}
-              label="Data Breaches"
-              value="0"
-              variant="success"
-              trend="neutral"
-              trendValue="No breaches detected"
-            />
-            <MetricCard
-              icon={Network}
-              label="Network Speed"
-              value="847 ms"
-              variant="default"
-              trend="up"
-              trendValue="+12% faster"
-            />
-            <MetricCard
-              icon={Lock}
-              label="Encryption"
-              value="TLS 1.3"
-              variant="success"
-              trend="neutral"
-              trendValue="Strong encryption"
-            />
+            {scanResult ? (
+              <>
+                <MetricCard
+                  icon={Eye}
+                  label="Data Leak"
+                  value={scanResult.dataLeakDetected ? "Detected" : "Not Detected"}
+                  variant={scanResult.dataLeakDetected ? "destructive" : "success"}
+                  trend={scanResult.dataLeakDetected ? "down" : "up"}
+                  trendValue={scanResult.dataLeakDetected ? "Risk detected" : "No leaks found"}
+                />
+                <MetricCard
+                  icon={Database}
+                  label="Sensitive Data"
+                  value={scanResult.sensitiveDataFound ? "Found" : "Not Found"}
+                  variant={scanResult.sensitiveDataFound ? "warning" : "success"}
+                  trend={scanResult.sensitiveDataFound ? "down" : "up"}
+                  trendValue={scanResult.sensitiveDataFound ? "Potential exposure" : "Data protected"}
+                />
+                <MetricCard
+                  icon={Network}
+                  label="Connection"
+                  value={scanResult.connectionSpeed}
+                  variant="default"
+                  trend="neutral"
+                  trendValue="Network latency"
+                />
+                <MetricCard
+                  icon={Lock}
+                  label="Encryption"
+                  value={scanResult.encryptionStrength}
+                  variant={scanResult.encryptionStrength === "strong" ? "success" : 
+                           scanResult.encryptionStrength === "weak" ? "destructive" : "warning"}
+                  trend={scanResult.encryptionStrength === "strong" ? "up" : 
+                         scanResult.encryptionStrength === "weak" ? "down" : "neutral"}
+                  trendValue={`${scanResult.encryptionStrength} protection`}
+                />
+              </>
+            ) : (
+              <>
+                <MetricCard
+                  icon={Activity}
+                  label="Active Monitoring"
+                  value="24/7"
+                  variant="success"
+                  trend="up"
+                  trendValue="Always protected"
+                />
+                <MetricCard
+                  icon={Database}
+                  label="Data Breaches"
+                  value="0"
+                  variant="success"
+                  trend="neutral"
+                  trendValue="No breaches detected"
+                />
+                <MetricCard
+                  icon={Network}
+                  label="Network Speed"
+                  value="847 ms"
+                  variant="default"
+                  trend="up"
+                  trendValue="+12% faster"
+                />
+                <MetricCard
+                  icon={Lock}
+                  label="Encryption"
+                  value="TLS 1.3"
+                  variant="success"
+                  trend="neutral"
+                  trendValue="Strong encryption"
+                />
+              </>
+            )}
           </div>
         </section>
 
         {/* Features */}
         <section className="space-y-6">
           <h3 className="text-2xl font-bold">Protection Features</h3>
+          {scanResult && (
+            <Card className="p-6 border-2 border-border mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Data Handling Practices</h3>
+                <Button variant="outline" size="sm" onClick={() => setShowAnalysis(true)}>
+                  View Detailed Analysis
+                </Button>
+              </div>
+              <p className="text-muted-foreground">{scanResult.dataHandlingPractices}</p>
+            </Card>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="p-6 border-2 border-primary/50 bg-primary/5 hover:scale-105 transition-transform duration-300">
               <div className="rounded-lg bg-gradient-cyber p-3 w-fit mb-4 shadow-glow-cyber">
@@ -246,6 +389,10 @@ const Index = () => {
         open={showAnalysis}
         onOpenChange={setShowAnalysis}
         siteName={currentSite}
+        riskScore={scanResult?.riskScore || 0}
+        riskLevel={scanResult?.riskLevel || "medium"}
+        threats={scanResult?.threats || []}
+        timestamp={scanResult?.timestamp || new Date().toISOString()}
       />
     </div>
   );

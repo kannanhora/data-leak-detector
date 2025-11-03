@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <!-- Shield base -->
+  <path d="M256 472.3c-8.3 0-16.3-1.6-23.8-4.8C141.3 432.4 80 348.6 80 256V112l176-48 176 48v144c0 92.6-61.3 176.4-152.2 211.5-7.5 3.2-15.5 4.8-23.8 4.8z" fill="#4F46E5" fill-opacity="0.9"/>
+  
+  <!-- Inner shield gradient -->
+  <path d="M256 448c-6.9 0-13.6-1.3-19.8-4C154.4 414.5 104 338.8 104 256V124.8L256 84l152 40.8V256c0 82.8-50.4 158.5-132.2 188-6.2 2.7-12.9 4-19.8 4z" fill="url(#gradient)"/>
+  
+  <!-- Lock body -->
+  <rect x="192" y="240" width="128" height="112" rx="16" fill="#F8FAFC" />
+  
+  <!-- Lock shackle -->
+  <path d="M320 240v-32c0-35.3-28.7-64-64-64s-64 28.7-64 64v32" stroke="#F8FAFC" stroke-width="24" stroke-linecap="round"/>
+  
+  <!-- Keyhole -->
+  <circle cx="256" cy="288" r="16" fill="#4F46E5"/>
+  <rect x="252" y="288" width="8" height="32" rx="4" fill="#4F46E5"/>
+  
+  <!-- Digital circuit lines -->
+  <path d="M160 320h32M320 320h32M176 352h32M304 352h32" stroke="#F8FAFC" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Glow effect -->
+  <circle cx="256" cy="256" r="180" fill="url(#glow)" fill-opacity="0.3"/>
+  
+  <!-- Definitions -->
+  <defs>
+    <linearGradient id="gradient" x1="256" y1="84" x2="256" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#818CF8"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="256" cy="256" r="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#818CF8"/>
+      <stop offset="1" stop-color="#4F46E5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>
